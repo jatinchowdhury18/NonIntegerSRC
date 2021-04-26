@@ -90,7 +90,7 @@ input and output signals for the transformed filters may be
 at different sample rates. When seen in the context of
 sample rate conversion, this is a pretty neat insight:
 rather than resampling and then filtering, the filtering and
-resampling happen in the process!
+resampling happen in the same process!
 
 ![](./BBD_Filters.png)
 
@@ -118,8 +118,11 @@ use the `SRC_SINC_FASTEST` option. As it turns out, the
 results are not even close! On my Linux system running an
 Intel i7 CPU, the Holters-Parker resampler measures 10-40x
 faster than `libsamplerate` depending on the sample rate
-conversion factor! Further, I don't think my implementation
-of the Holters-Parker resampler is fully optimal just yet.
+conversion factor! On a Mac machine, I found comparable
+results, while on my Windows machine, the improvements
+were even more significant, nearing 40x in almost every
+test case. Further, I don't think my implementation of
+the Holters-Parker resampler is fully optimal just yet.
 With a couple more rounds of optimisations, I bet
 I could have it running even faster!
 
@@ -133,12 +136,12 @@ in most cases, and `libsamplerate` has a thoroughly
 tested implementation, with well understood trade-offs
 between quality and speed. Further, there are other
 interpolation-based methods that give decent quality
-results and can also out-perform `libsamplerate`.
+output and can also out-perform `libsamplerate`.
 
 My goal here is simply to introduce the Holters-Parker
 resampler as a potential option that may be useful for
 some cases. Eventually, I'll need to see how my implementation
-stacks up in both speed and quality, to `libsamplerate`,
+stacks up in both speed and quality to `libsamplerate`
 and other interpolation-based SRC implementations. In
 particular, I think choosing the right filter design
 for the Holters-Parker resampler will be an important
