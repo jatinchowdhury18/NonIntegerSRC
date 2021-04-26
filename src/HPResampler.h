@@ -11,89 +11,87 @@ public:
     {
         ratio = (float) src_ratio;
         Ts = 1.0f / ((float) sample_rate);
-        Ts_up = 1.0f / ((float) sample_rate * ratio);
-        Ts_down = 1.0f / ((float) sample_rate / ratio);
+        Ts_in = 1.0f / ((float) sample_rate * ratio);
+        Ts_out = 1.0f / ((float) sample_rate / ratio);
         y_old = 0.0f;
         
-        upFilter = std::make_unique<InputFilterBank> (Ts);
-        downFilter = std::make_unique<OutputFilterBank> (Ts);
+        inFilter = std::make_unique<InputFilterBank> (Ts);
+        inFilter->set_freq ((float) sample_rate * 0.5f);
+        inFilter->set_delta (Ts_in);
 
-        upFilter->set_freq ((float) sample_rate * 0.5f);
-        upFilter->set_delta (Ts_up);
+        outFilter = std::make_unique<OutputFilterBank> (Ts_in);
+        outFilter->set_freq ((float) sample_rate * 0.5f);
+        outFilter->set_delta (Ts_out);
+        H0 = 1.0f; // outFilter->calcH0();
 
-        downFilter->set_freq ((float) sample_rate * 0.5f);
-        downFilter->set_delta (Ts_up);
-
-        H0 = downFilter->calcH0();
+        middle.resize (int (block_size * ratio) + 1, 0.0f);
     }
 
+#if 0 // use input filter (Dirac)
     int process (const float* input, float* output, int num_samples) override
     {
-        if (ratio > 1.0f) // upsample
+        inFilter->set_time (tn);
+        int count = 0;
+        for (int i = 0; i < num_samples; ++i)
         {
-            upFilter->set_time (tn);
-            int count = 0;
-            for (int i = 0; i < num_samples; ++i)
+            while (tn < Ts)
             {
-                while (tn < Ts)
-                {
-                    upFilter->calcG();
-                    auto sum = FastMath::vSum(SSEComplexMulReal(upFilter->Gcalc, upFilter->x));
-                    output[count++] = -0.95097f * sum;
+                inFilter->calcG();
+                auto sum = FastMath::vSum(SSEComplexMulReal(inFilter->Gcalc, inFilter->x));
+                output[count++] = -0.95097f * sum;
 
-                    tn += Ts_up;
-                }
-                tn -= Ts;
-
-                upFilter->process(input[i]);
+                tn += Ts_in;
             }
+            tn -= Ts;
 
-            return count;
+            inFilter->process(input[i]);
         }
 
-        if (ratio < 1.0f) // downsample
-        {
-            downFilter->set_time (tn);
-            int count = 0;
-            for (int i = 0; i < num_samples; )
-            {
-                SSEComplex xOutAccum;
-                while (tn < Ts)
-                {
-                    auto y = input[i++];
-                    auto delta = y - y_old;
-                    y_old = y;
-                    downFilter->calcG();
-                    xOutAccum += downFilter->Gcalc * delta;
-
-                    tn += Ts_down;
-                }
-                tn -= Ts;
-
-                downFilter->process(xOutAccum);
-                float sum = FastMath::vSum(xOutAccum._r);
-                output[count++] = y_old + sum;
-            }
-
-            return count;
-        }
-
-        // edge case
-        std::copy (input, &input[num_samples], output);
-        return num_samples;
+        return count;
     }
+#else // use output filter (rectangular)
+    int process (const float* input, float* output, int num_samples) override
+    {
+        outFilter->set_time (tn);
+        int count = 0;
+        for (int i = 0; i < num_samples; )
+        {
+            SSEComplex xOutAccum;
+            int counter = 0;
+            while (tn < Ts)
+            {
+                auto y = input[i++];
+                auto delta = (y - y_old);
+                y_old = y;
+
+                outFilter->calcG();
+                xOutAccum += outFilter->Gcalc * delta;
+                tn += Ts_out;
+            }
+            tn -= Ts;
+
+            outFilter->process(xOutAccum);
+            float sum = FastMath::vSum(xOutAccum._r);
+            output[count++] = y_old + sum;
+        }
+
+        return count;
+    }
+#endif
 
 private:
-    std::unique_ptr<InputFilterBank> upFilter;
-    std::unique_ptr<OutputFilterBank> downFilter;
+    std::unique_ptr<InputFilterBank> inFilter;
+    std::unique_ptr<OutputFilterBank> outFilter;
 
     float Ts = 1.0f;
-    float Ts_up = 1.0f;
-    float Ts_down = 1.0f;
+    float Ts_in = 1.0f;
+    float Ts_out = 1.0f;
     float tn = 0.0;
 
     float y_old = 0.0f;
-
     float ratio = 1.0f;
+
     float H0 = 1.0f;
+
+    std::vector<float> middle;
 };

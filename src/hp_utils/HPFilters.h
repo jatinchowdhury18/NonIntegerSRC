@@ -1,7 +1,6 @@
 #pragma once
 
 #include "SSEComplex.h"
-// #include "portable_intrinsics.h"
 
 /**
  * Bucket-Bridage Device filters, as derived by

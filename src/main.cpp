@@ -6,10 +6,8 @@
 #include "HPResampler.h"
 #include "utils.h"
 
-#define MAKE_PLOTS 0
-
 #if MAKE_PLOTS
-#include "../third_party/matplotlibcpp.h"
+#include <matplotlibcpp.h>
 namespace plt = matplotlibcpp;
 #endif
 
@@ -56,9 +54,11 @@ void test_libsamplerate (const std::vector<float>& data, double ratio, float fs)
     // std::cout << "  Error: " << err << std::endl;
 
 #if MAKE_PLOTS
-    // plt::plot(gen_time (fs, (int) data.size()), data);
-    // plt::plot(gen_time (fs * (float) ratio, (int) output.size()), output);
-    // plt::save("./libsamplerate.png");
+    plt::figure();
+    plt::plot(gen_time (fs, (int) data.size()), data);
+    plt::plot(gen_time (fs * (float) ratio, (int) output.size()), output);
+    plt::xlim(0.0, 0.01);
+    plt::save("./doc/libsamplerate.png");
 #endif
 }
 
@@ -79,10 +79,11 @@ void test_hpresampler (const std::vector<float>& data, double ratio, float fs)
     // std::cout << "  Error: " << err << std::endl;
 
 #if MAKE_PLOTS
-    // namespace plt = matplotlibcpp;
-    // plt::plot(gen_time (fs, (int) data.size()), data);
-    // plt::plot(gen_time (fs * (float) ratio, (int) output.size()), output);
-    // plt::save("./hpresampler.png");
+    plt::figure();
+    plt::plot(gen_time (fs, (int) data.size()), data);
+    plt::plot(gen_time (fs * (float) ratio, (int) output.size()), output);
+    plt::xlim(0.0, 0.01);
+    plt::save("./doc/hpresampler.png");
 #endif
 }
 
