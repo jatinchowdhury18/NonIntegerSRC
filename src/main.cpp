@@ -5,7 +5,13 @@
 #include "LibSamplerRateSRC.h"
 #include "HPResampler.h"
 #include "utils.h"
+
+#define MAKE_PLOTS 0
+
+#if MAKE_PLOTS
 #include "../third_party/matplotlibcpp.h"
+namespace plt = matplotlibcpp;
+#endif
 
 namespace
 {
@@ -49,10 +55,11 @@ void test_libsamplerate (const std::vector<float>& data, double ratio, float fs)
     // std::cout << "  Latency: " << latency << std::endl;
     // std::cout << "  Error: " << err << std::endl;
 
-    // namespace plt = matplotlibcpp;
+#if MAKE_PLOTS
     // plt::plot(gen_time (fs, (int) data.size()), data);
     // plt::plot(gen_time (fs * (float) ratio, (int) output.size()), output);
     // plt::save("./libsamplerate.png");
+#endif
 }
 
 void test_hpresampler (const std::vector<float>& data, double ratio, float fs)
@@ -71,10 +78,12 @@ void test_hpresampler (const std::vector<float>& data, double ratio, float fs)
     // std::cout << "  Latency: " << latency << std::endl;
     // std::cout << "  Error: " << err << std::endl;
 
+#if MAKE_PLOTS
     // namespace plt = matplotlibcpp;
     // plt::plot(gen_time (fs, (int) data.size()), data);
     // plt::plot(gen_time (fs * (float) ratio, (int) output.size()), output);
     // plt::save("./hpresampler.png");
+#endif
 }
 
 int main()

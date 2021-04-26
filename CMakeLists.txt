@@ -11,16 +11,16 @@ target_sources(src_test PRIVATE
     src/main.cpp
 )
 
-find_package(Python3 COMPONENTS Development NumPy)
+# find_package(Python3 COMPONENTS Development NumPy)
 
 target_include_directories(src_test PRIVATE
     third_party/libsamplerate/include
-    ${Python3_INCLUDE_DIRS}
-    ${Python3_NumPy_INCLUDE_DIRS}
+    # ${Python3_INCLUDE_DIRS}
+    # ${Python3_NumPy_INCLUDE_DIRS}
 )
 
 target_link_libraries(src_test PUBLIC
     samplerate
-    Python3::Python
-    Python3::NumPy
+    # Python3::Python
+    # Python3::NumPy
 )
