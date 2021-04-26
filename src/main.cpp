@@ -9,12 +9,11 @@
 
 namespace
 {
-    constexpr int n_samples = 8192; // 100000;
+    constexpr int n_samples = 1000000;
     constexpr float freq = 100.0f;
-    constexpr float fs = 48000.0f;
 }
 
-double process_data (const std::vector<float>& data, std::vector<float>& output, double ratio, BaseSRC* src)
+double process_data (const std::vector<float>& data, std::vector<float>& output, double ratio, BaseSRC* src, float fs)
 {
     constexpr int block_size = 2048;
     src->prepare ((double) fs, block_size, ratio);
@@ -38,11 +37,11 @@ double process_data (const std::vector<float>& data, std::vector<float>& output,
     return dur;
 }
 
-void test_libsamplerate (const std::vector<float>& data, double ratio)
+void test_libsamplerate (const std::vector<float>& data, double ratio, float fs)
 {
     LibSampleRateSRC src;
     std::vector<float> output;
-    auto time = process_data (data, output, ratio, &src);
+    auto time = process_data (data, output, ratio, &src, fs);
     auto [latency, err] = calc_stats (freq, (float) ratio * fs, output);
 
     std::cout << "  Ratio: " << ratio << std::endl;
@@ -56,11 +55,11 @@ void test_libsamplerate (const std::vector<float>& data, double ratio)
     // plt::save("./libsamplerate.png");
 }
 
-void test_hpresampler (const std::vector<float>& data, double ratio)
+void test_hpresampler (const std::vector<float>& data, double ratio, float fs)
 {
     HPResampler src;
     std::vector<float> output;
-    auto time = process_data (data, output, ratio, &src);
+    auto time = process_data (data, output, ratio, &src, fs);
     auto [latency, err] = calc_stats (freq, (float) ratio * fs, output);
 
     // auto max_val = *std::max_element (output.begin(), output.end());
@@ -81,19 +80,21 @@ void test_hpresampler (const std::vector<float>& data, double ratio)
 int main()
 {
     std::cout << "Generating input data..." << std::endl;
-    auto sine = gen_sine (freq, fs, n_samples);
+    auto sine_48 = gen_sine (freq, 48000.0f, n_samples);
+    auto sine_96 = gen_sine (freq, 96000.0f, n_samples);
+    auto sine_441 = gen_sine (freq, 44100.0f, n_samples);
 
     std::cout << "Testing libsamplerate:" << std::endl;
-    test_libsamplerate (sine, 2.0);
-    test_libsamplerate (sine, 0.5);
-    test_libsamplerate (sine, 1.088);
-    test_libsamplerate (sine, 0.919);
+    test_libsamplerate (sine_48, 2.0, 48000.0f);
+    test_libsamplerate (sine_96, 0.5, 96000.0f);
+    test_libsamplerate (sine_441, 1.088, 44100.0f);
+    test_libsamplerate (sine_48, 0.919, 48000.0f);
 
     std::cout << "Testing Holters-Parker Resampler:" << std::endl;
-    test_hpresampler (sine, 2.0);
-    test_hpresampler (sine, 0.5);
-    test_hpresampler (sine, 1.088);
-    test_hpresampler (sine, 0.919);
+    test_hpresampler (sine_48, 2.0, 48000.0f);
+    test_hpresampler (sine_96, 0.5, 96000.0f);
+    test_hpresampler (sine_441, 1.088, 44100.0f);
+    test_hpresampler (sine_48, 0.919, 48000.0f);
 
     return 0;
 }
