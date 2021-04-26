@@ -12,10 +12,7 @@ algorithms are implemented:
 On my Linux machine, the HP resampler is faster by
 the following amounts:
 
-- 48 kHz -> 96 kHz: 20x faster
-- 96 kHz -> 48 kHz: 20x faster
-- 44.1 kHz -> 48 kHz: 12.5x faster
-- 48 kHz -> 44.1 kHz: 16x faster
+![](./doc/speed_chart.png)
 
 ## Building
 ```bash
@@ -28,7 +25,8 @@ Then to run the testing tool, run
 ## Credits
 
 - [libsamplerate](https://github.com/libsndfile/libsamplerate)
-- The HP-Resamples uses a bunch of code borrowed from the [Surge Synthesizer project](https://github.com/surge-synthsizer/surge) (in particular, the `SSEComplex` class written by Paul Walker)
+- [matplotlibcpp](https://github.com/lava/matplotlib-cpp)
+- The HP-Resampler uses a bunch of code borrowed from the [Surge Synthesizer project](https://github.com/surge-synthsizer/surge) (in particular, the `SSEComplex` class written by Paul Walker)
 
 ## License
 
