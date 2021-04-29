@@ -6,6 +6,7 @@
 
 #include "LibSamplerRateSRC.h"
 #include "HPResampler.h"
+#include "LanczosSRC.h"
 
 void usage()
 {
@@ -82,6 +83,12 @@ std::unique_ptr<BaseSRC> getSRC (int mode)
     {
         std::cout << "Using mode: HPResampler" << std::endl;
         return std::make_unique<HPResampler>();
+    }
+    
+    if (mode == 2)
+    {
+        std::cout << "Using mode: LanczosResampler" << std::endl;
+        return std::make_unique<LanczosSRC>();
     }
 
     std::cout << "Mode argument not recogized!" << std::endl;

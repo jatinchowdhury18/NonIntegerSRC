@@ -18,6 +18,7 @@ target_link_libraries(src_sndfile PUBLIC samplerate)
 # Link to libsndfile
 set(BUILD_PROGRAMS OFF CACHE BOOL "Don't build libsndfile programs!")
 set(BUILD_EXAMPLES OFF CACHE BOOL "Don't build libsndfile examples!")
+set(BUILD_REGTEST OFF CACHE BOOL "Don't build libsndfile regtest!")
 add_subdirectory(third_party/libsndfile)
 
 target_include_directories(src_sndfile PRIVATE third_party/libsndfile/include)

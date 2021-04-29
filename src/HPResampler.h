@@ -1,6 +1,7 @@
 #pragma once
 
-#include "hp_utils/HPFilters.h"
+#include "BaseSRC.h"
+#include "src_utils/HPFilters.h"
 
 class HPResampler : public BaseSRC
 {
