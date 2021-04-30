@@ -113,7 +113,9 @@ Vec2d process_data (const Vec2d& input, double ratio, BaseSRC* src, float fs)
         src->prepare ((double) fs, (int) input.size(), ratio);
         std::vector<float> out (int (data.size() * ratio + 1), 0.0f);
 
-        src->process (data.data(), out.data(), (int) data.size());
+        int out_ptr = 0;
+        for (int i = 0; i + block_size < (int) data.size(); i += block_size)
+            out_ptr += src->process (&data[i], &out[out_ptr], block_size);
 
         output.push_back(out);
     }

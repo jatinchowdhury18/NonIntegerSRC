@@ -23,7 +23,6 @@ public:
         outFilter = std::make_unique<OutputFilterBank> (Ts_in);
         outFilter->set_freq ((float) sample_rate * 0.5f);
         outFilter->set_delta (Ts_out);
-        H0 = 1.0f; // outFilter->calcH0();
 
         middle.resize (int (block_size * ratio) + 1, 0.0f);
     }
@@ -58,7 +57,6 @@ public:
         for (int i = 0; i < num_samples; )
         {
             SSEComplex xOutAccum;
-            int counter = 0;
             while (tn < Ts)
             {
                 auto y = input[i++];
@@ -91,8 +89,6 @@ private:
 
     float y_old = 0.0f;
     float ratio = 1.0f;
-
-    float H0 = 1.0f;
 
     std::vector<float> middle;
 };
