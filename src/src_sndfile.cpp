@@ -117,7 +117,7 @@ Vec2d process_data (const Vec2d& input, double ratio, BaseSRC* src, float fs)
         for (int i = 0; i + block_size < (int) data.size(); i += block_size)
             out_ptr += src->process (&data[i], &out[out_ptr], block_size);
 
-        output.push_back(out);
+        output.push_back(std::vector<float> (out.begin(), out.begin() + out_ptr));
     }
     
     auto dur = std::chrono::duration_cast<second_t>(clock_t::now() - start).count();

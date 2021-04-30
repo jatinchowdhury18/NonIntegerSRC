@@ -25,14 +25,14 @@ os.system(f'./build/src_sndfile audio/sine_441.wav audio/sine_{target_fs}_LCZ.wa
 fs, x1 = wavfile.read('audio/sine_96_SRC.wav')
 plot_fft(x1, fs, label='SRC')
 
-fs, x2 = wavfile.read('audio/sine_96_HPR.wav')
-plot_fft(x2, fs, '--', label='HP')
+# fs, x2 = wavfile.read('audio/sine_96_HPR.wav')
+# plot_fft(x2, fs, '--', label='HP')
 
 fs, x3 = wavfile.read('audio/sine_96_LCZ.wav')
 plot_fft(x3, fs, '--', label='Lanczos')
 
 plt.grid()
-plt.ylim(-100)
+plt.ylim(-150)
 plt.legend()
 
 plt.title('SRC Comparison')
